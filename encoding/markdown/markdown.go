@@ -3,8 +3,6 @@ package markdown
 import (
 	"io"
 	"time"
-
-	"github.com/mattn/godown"
 )
 
 // ResourceType gives a hint on the way to represent Resource
@@ -38,16 +36,8 @@ type (
 // Convert wraps a call to external dependency to provide
 // stable interface for package users
 func Convert(w io.Writer, r io.Reader, highlights, escapeSpecialChars bool) error {
-	rules := []godown.CustomRule{
-		&TodoItem{}, // Handling checkboxes is always enabled
-	}
-
-	if highlights {
-		rules = append(rules, &HighlightedText{})
-	}
-
-	return godown.Convert(w, r, &godown.Option{
-		CustomRules: rules,
-		DoNotEscape: !escapeSpecialChars,
-	})
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// Handling checkboxes is always enabled

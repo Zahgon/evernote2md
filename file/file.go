@@ -2,10 +2,7 @@ package file
 
 import (
 	"io"
-	"os"
-	"path/filepath"
 	"regexp"
-	"strings"
 )
 
 const (
@@ -24,57 +21,21 @@ var (
 
 // Save a new file in a given dir with the following content.
 // Creates a directory if necessary.
-func Save(dir, name string, content io.Reader) error {
-	if len(name) == 0 {
-		return nil
-	}
-
-	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-		return err
-	}
-
-	output, err := os.Create(filepath.Join(dir, name))
-	if err != nil {
-		return err
-	}
-
-	if _, err = io.Copy(output, content); err != nil {
-		_ = output.Close()
-		return err
-	}
-
-	return output.Close()
-}
+func Save(dir, name string, content io.Reader) error { _ = "STUB: not implemented"; return nil }
 
 // BaseName normalizes a given string to use it as a safe filename
 func BaseName(s string) string {
+	_ = "STUB: not implemented"
 	// Replace separator characters with a dash
-	s = baseNameSeparators.ReplaceAllString(s, "-")
-
-	// Remove any trailing space to avoid ending on -
-	s = strings.Trim(s, " ")
-
-	// Replace inappropriate characters with an underscore
-	s = illegalChars.ReplaceAllString(s, "_")
-
-	// Remove any multiple dashes caused by replacements above
-	s = dashes.ReplaceAllString(s, "-")
-
-	// Check file name length in bytes
-	if len(s) < maxNameChars {
-		return s
-	}
-
-	// Trim filename to the max allowed number of bytes
-	var sb strings.Builder
-	var i = 0
-	for index, c := range s {
-		if index >= maxNameBytes || i >= maxNameChars {
-			return sb.String()
-		}
-		sb.WriteRune(c)
-		i++
-	}
-
-	return s
+	return ""
 }
+
+// Remove any trailing space to avoid ending on -
+
+// Replace inappropriate characters with an underscore
+
+// Remove any multiple dashes caused by replacements above
+
+// Check file name length in bytes
+
+// Trim filename to the max allowed number of bytes

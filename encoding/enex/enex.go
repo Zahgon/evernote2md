@@ -1,13 +1,9 @@
 package enex
 
 import (
-	"bytes"
 	"encoding/xml"
-	"errors"
-	"fmt"
 	"io"
 	"regexp"
-	"strings"
 )
 
 type (
@@ -82,146 +78,32 @@ type (
 var hashRe = regexp.MustCompile(`\b[0-9a-f]{32}\b`)
 
 // Decode will return an Export from evernote
-func Decode(data io.Reader) (*Export, error) {
-	var e Export
-	err := NewDecoder(data).Decode(&e)
+func Decode(data io.Reader) (*Export, error) { _ = "STUB: not implemented"; return nil, nil }
 
-	for i := range e.Notes {
-		if err := decodeContent(&e.Notes[i]); err != nil {
-			// EOF is a known case when the content is empty
-			if !errors.Is(err, io.EOF) {
-				e.Notes = append(e.Notes[:i], e.Notes[+1:]...)
-				return nil, fmt.Errorf("decoding note %s: %w", e.Notes[i].Title, err)
-			}
-		}
-
-		err = decodeRecognition(&e.Notes[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return &e, err
-}
+// EOF is a known case when the content is empty
 
 type Decoder struct {
 	xml *xml.Decoder
 }
 
-func NewDecoder(r io.Reader) *Decoder {
-	d := xml.NewDecoder(r)
-	d.Strict = false
+func NewDecoder(r io.Reader) *Decoder { _ = "STUB: not implemented"; return nil }
 
-	return &Decoder{xml: d}
-}
-
-func (d Decoder) Decode(v any) error {
-	return d.xml.Decode(v)
-}
+func (d Decoder) Decode(v any) error { _ = "STUB: not implemented"; return nil }
 
 type StreamDecoder struct {
 	xml *xml.Decoder
 }
 
 func NewStreamDecoder(r io.Reader) (*StreamDecoder, error) {
-	needsCDATAFix, reader, err := detectNestedCDATA(r)
-	if err != nil {
-		return nil, err
-	}
-
-	var decoder *xml.Decoder
-	if needsCDATAFix {
-		buf := new(bytes.Buffer)
-		if _, err := buf.ReadFrom(reader); err != nil {
-			return nil, err
-		}
-		content := buf.String()
-		content = removeNestedCDATA(content)
-		decoder = xml.NewDecoder(strings.NewReader(content))
-	} else {
-		decoder = xml.NewDecoder(reader)
-	}
-	decoder.Strict = false
-
-	if err := findEnExportElement(decoder); err != nil {
-		return nil, err
-	}
-
-	return &StreamDecoder{xml: decoder}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
-func (d StreamDecoder) Next(n *Note) error {
-	for {
-		token, err := d.xml.Token()
-		if err != nil {
-			return err
-		}
-		element, ok := token.(xml.StartElement)
+func (d StreamDecoder) Next(n *Note) error { _ = "STUB: not implemented"; return nil }
 
-		if ok && element.Name.Local == "note" {
-			err = d.xml.DecodeElement(n, &element)
-			if err != nil {
-				return err
-			}
-			err = decodeContent(n)
-			if err != nil {
-				if errors.Is(err, io.EOF) {
-					return nil
-				}
-				return err
-			}
+func decodeContent(n *Note) error { _ = "STUB: not implemented"; return nil }
 
-			return decodeRecognition(n)
-		}
-	}
-}
-
-func decodeContent(n *Note) error {
-	var c Content
-	var reader = bytes.NewReader(n.Content)
-
-	if err := NewDecoder(reader).Decode(&c); err != nil {
-		return err
-	}
-	n.Content = c.Text
-	return nil
-}
-
-func decodeRecognition(n *Note) error {
-	for j := range n.Resources {
-		if res := n.Resources[j]; len(res.Recognition) == 0 {
-			hash := hashRe.FindString(res.Attributes.SourceUrl)
-			if len(hash) > 0 {
-				n.Resources[j].ID = hash
-			}
-			continue
-		}
-		var rec Recognition
-		decoder := NewDecoder(bytes.NewReader(n.Resources[j].Recognition))
-		err := decoder.Decode(&rec)
-		if err != nil {
-			return fmt.Errorf("decoding resource %s: %w", n.Resources[j].Attributes.Filename, err)
-		}
-		n.Resources[j].ID = rec.ObjID
-		n.Resources[j].Type = rec.ObjType
-	}
-
-	return nil
-}
+func decodeRecognition(n *Note) error { _ = "STUB: not implemented"; return nil }
 
 // findEnExportElement advances the decoder to the en-export element.
-func findEnExportElement(decoder *xml.Decoder) error {
-	for {
-		token, err := decoder.Token()
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				return fmt.Errorf("failed to initialise stream reader: no en-export data found: %w", err)
-			}
-			return err
-		}
-		if element, ok := token.(xml.StartElement); ok && element.Name.Local == "en-export" {
-			break
-		}
-	}
-	return nil
-}
+func findEnExportElement(decoder *xml.Decoder) error { _ = "STUB: not implemented"; return nil }
